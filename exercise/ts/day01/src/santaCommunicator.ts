@@ -24,3 +24,25 @@ export class SantaCommunicator {
         return numberOfDaysBeforeChristmas - numbersOfDaysForComingBack - this.numberOfDaysToRest;
     }
 }
+
+export class Reindeer {
+    private readonly name: string;
+    private readonly location: string;
+    private readonly daysToReturn: number;
+    private readonly daysBeforeChristmas: number;
+
+    constructor(name: string, location: string, daysToReturn: number, daysBeforeChristmas: number) {
+        this.name = name;
+        this.location = location;
+        this.daysToReturn = daysToReturn;
+        this.daysBeforeChristmas = daysBeforeChristmas;
+    }
+
+    public composeMessage(communicator: SantaCommunicator): string {
+        return communicator.composeMessage(this.name, this.location, this.daysToReturn, this.daysBeforeChristmas);
+    }
+
+    public isOverdue(communicator: SantaCommunicator, logger: Logger): boolean {
+        return communicator.isOverdue(this.name, this.location, this.daysToReturn, this.daysBeforeChristmas, logger);
+    }
+}
