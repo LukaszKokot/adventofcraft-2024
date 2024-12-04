@@ -36,6 +36,7 @@ describe("FizzBuzz should return", () => {
     [1, "1"],
     [67, "67"],
     [82, "82"],
+    [97, "97"],
     [3, "Fizz"],
     [66, "FizzBang"],
     [99, "FizzBang"],
@@ -47,7 +48,10 @@ describe("FizzBuzz should return", () => {
     [45, "FizzBuzz"],
     [7, "Whizz"],
     [11, "Bang"],
+    [55, "BuzzBang"],
+    [35, "BuzzWhizz"],
     [77, "WhizzBang"],
+    [84, "FizzWhizz"],
   ])("its representation %s -> %s", (input, expectedResult) => {
     const conversionResult = fizzbuzzGame.fizzbuzz(input);
     expect(isSome(conversionResult)).toBeTruthy();
