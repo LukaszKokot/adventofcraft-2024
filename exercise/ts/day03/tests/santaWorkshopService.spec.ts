@@ -1,6 +1,9 @@
 import * as fc from "fast-check";
 import { Gift } from "../src/gift";
-import { SantaWorkshopService } from "../src/santaWorkshopService";
+import {
+  GiftTooHeavyError,
+  SantaWorkshopService,
+} from "../src/santaWorkshopService";
 import { neverFailingPredicate } from "./failureReporter";
 
 describe("SantaWorkshopService", () => {
@@ -46,10 +49,7 @@ describe("SantaWorkshopService", () => {
           try {
             service.prepareGift(giftName, weight, color, material);
           } catch (error) {
-            return (
-              error instanceof Error &&
-              error.message === "Gift is too heavy for Santa's sleigh"
-            );
+            return error instanceof GiftTooHeavyError;
           }
         })
       )

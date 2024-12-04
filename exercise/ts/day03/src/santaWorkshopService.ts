@@ -17,12 +17,18 @@ export class SantaWorkshopService {
     material: string
   ): Gift {
     if (weight > this.maxWeight) {
-      throw new Error("Gift is too heavy for Santa's sleigh");
+      throw new GiftTooHeavyError();
     }
 
     const gift = new Gift(giftName, weight, color, material);
     this.preparedGifts.push(gift);
 
     return gift;
+  }
+}
+
+export class GiftTooHeavyError extends Error {
+  constructor() {
+    super("Gift is too heavy for Santa's sleigh");
   }
 }
