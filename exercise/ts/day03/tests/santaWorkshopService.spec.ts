@@ -1,44 +1,72 @@
-import { SantaWorkshopService } from "../src/santaWorkshopService";
+import * as fc from "fast-check";
 import { Gift } from "../src/gift";
+import { MAX_WEIGHT, SantaWorkshopService } from "../src/santaWorkshopService";
+import { neverFailingPredicate } from "./failureReporter";
 
 describe("SantaWorkshopService", () => {
   let service: SantaWorkshopService;
+
+  beforeAll(() => {
+    fc.configureGlobal({ numRuns: 100 });
+  });
 
   beforeEach(() => {
     service = new SantaWorkshopService();
   });
 
-  it("should prepare a gift with valid parameters", () => {
-    const giftName = "Bitzee";
-    const weight = 3;
-    const color = "Purple";
-    const material = "Plastic";
-
-    const gift = service.prepareGift(giftName, weight, color, material);
-
-    expect(gift).toBeInstanceOf(Gift);
+  it("should fuzz prepare a gift with valid parameters", () => {
+    fc.assert(
+      fc.property(
+        fc.record({
+          giftName: fc.string(),
+          weight: fc.integer({ min: 0, max: MAX_WEIGHT }),
+          color: fc.string(),
+          material: fc.string(),
+        }),
+        neverFailingPredicate(
+          ({ giftName, weight, color, material }) =>
+            service.prepareGift(giftName, weight, color, material) instanceof
+            Gift
+        )
+      )
+    );
   });
 
-  it("should throw an error if gift is too heavy", () => {
-    const giftName = "Dog-E";
-    const weight = 6;
-    const color = "White";
-    const material = "Metal";
-
-    expect(() =>
-      service.prepareGift(giftName, weight, color, material)
-    ).toThrow("Gift is too heavy for Santa's sleigh");
+  it("should fuzz throw an error if gift is too heavy", () => {
+    fc.assert(
+      fc.property(
+        fc.record({
+          giftName: fc.string(),
+          weight: fc.oneof(fc.integer({ min: MAX_WEIGHT + 1 })),
+          color: fc.string(),
+          material: fc.string(),
+        }),
+        neverFailingPredicate(({ giftName, weight, color, material }) => {
+          try {
+            service.prepareGift(giftName, weight, color, material);
+          } catch (error) {
+            return (
+              error instanceof Error &&
+              error.message === "Gift is too heavy for Santa's sleigh"
+            );
+          }
+        })
+      )
+    );
   });
 
   it("should add an attribute to a gift", () => {
-    const giftName = "Furby";
-    const weight = 1;
-    const color = "Multi";
-    const material = "Cotton";
+    const gift = () => new Gift("Furby", 1, "Multi", "Cotton");
 
-    const gift = service.prepareGift(giftName, weight, color, material);
-    gift.addAttribute("recommendedAge", "3");
-
-    expect(gift.getRecommendedAge()).toBe(3);
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 0 }),
+        neverFailingPredicate((age) => {
+          const g = gift();
+          g.addAttribute("recommendedAge", age.toString());
+          return g.getRecommendedAge() === age;
+        })
+      )
+    );
   });
 });

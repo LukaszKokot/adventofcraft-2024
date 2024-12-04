@@ -1,5 +1,7 @@
 import { Gift } from "./gift";
 
+export const MAX_WEIGHT = 5;
+
 export class SantaWorkshopService {
   private preparedGifts: Gift[] = [];
 
@@ -9,7 +11,7 @@ export class SantaWorkshopService {
     color: string,
     material: string
   ): Gift {
-    if (weight > 5) {
+    if (weight > MAX_WEIGHT) {
       throw new Error("Gift is too heavy for Santa's sleigh");
     }
 
