@@ -5,7 +5,7 @@ import {
   GiftTooLightError,
   SantaWorkshopService,
 } from "../src/santaWorkshopService";
-import { neverFailingPredicate } from "./failureReporter";
+import { reportingFailurePredicate } from "./failureReporter";
 
 describe("SantaWorkshopService", () => {
   const maxWeight = 20;
@@ -28,7 +28,7 @@ describe("SantaWorkshopService", () => {
           color: fc.string(),
           material: fc.string(),
         }),
-        neverFailingPredicate(
+        reportingFailurePredicate(
           ({ giftName, weight, color, material }) =>
             service.prepareGift(giftName, weight, color, material) instanceof
             Gift
@@ -46,7 +46,7 @@ describe("SantaWorkshopService", () => {
           color: fc.string(),
           material: fc.string(),
         }),
-        neverFailingPredicate(({ giftName, weight, color, material }) => {
+        reportingFailurePredicate(({ giftName, weight, color, material }) => {
           try {
             service.prepareGift(giftName, weight, color, material);
           } catch (error) {
@@ -66,7 +66,7 @@ describe("SantaWorkshopService", () => {
           color: fc.string(),
           material: fc.string(),
         }),
-        neverFailingPredicate(({ giftName, weight, color, material }) => {
+        reportingFailurePredicate(({ giftName, weight, color, material }) => {
           try {
             service.prepareGift(giftName, weight, color, material);
           } catch (error) {
@@ -83,7 +83,7 @@ describe("SantaWorkshopService", () => {
     fc.assert(
       fc.property(
         fc.integer({ min: 0 }),
-        neverFailingPredicate((age) => {
+        reportingFailurePredicate((age) => {
           const g = gift();
           g.addAttribute("recommendedAge", age.toString());
           return g.getRecommendedAge() === age;
@@ -98,7 +98,7 @@ describe("SantaWorkshopService", () => {
     fc.assert(
       fc.property(
         fc.string({ minLength: 1 }),
-        neverFailingPredicate((childName) => {
+        reportingFailurePredicate((childName) => {
           const g = gift();
           g.assignToChild(childName);
           return g.toString().includes(`FOR ${childName}`);

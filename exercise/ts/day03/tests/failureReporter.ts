@@ -10,7 +10,7 @@ const reportFailure = (inputs: object[], error: unknown) => {
   fs.writeFileSync(fileName, fileContent);
 };
 
-export const neverFailingPredicate = <T extends (...args: any[]) => boolean>(
+export const reportingFailurePredicate = <T extends (...args: any[]) => boolean>(
   predicate: T
 ) => {
   return (...inputs: Parameters<T>): void => {
@@ -21,6 +21,7 @@ export const neverFailingPredicate = <T extends (...args: any[]) => boolean>(
       }
     } catch (err) {
       reportFailure(inputs, err);
+      return err;
     }
   };
 };
