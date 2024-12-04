@@ -55,7 +55,7 @@ describe("SantaWorkshopService", () => {
     );
   });
 
-  it("should add an attribute to a gift", () => {
+  it("should fuzzy add an attribute to a gift", () => {
     const gift = () => new Gift("Furby", 1, "Multi", "Cotton");
 
     fc.assert(
@@ -65,6 +65,21 @@ describe("SantaWorkshopService", () => {
           const g = gift();
           g.addAttribute("recommendedAge", age.toString());
           return g.getRecommendedAge() === age;
+        })
+      )
+    );
+  });
+
+  it("should fuzzy assign a gift to a child", () => {
+    const gift = () => new Gift("Furby", 1, "Multi", "Cotton");
+
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 1 }),
+        neverFailingPredicate((childName) => {
+          const g = gift();
+          g.assignToChild(childName);
+          return g.toString().includes(`FOR ${childName}`);
         })
       )
     );
