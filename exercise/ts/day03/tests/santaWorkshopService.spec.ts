@@ -1,42 +1,109 @@
-import {SantaWorkshopService} from "../src/santaWorkshopService";
-import {Gift} from "../src/gift";
+import * as fc from "fast-check";
+import { Gift } from "../src/gift";
+import {
+  GiftTooHeavyError,
+  GiftTooLightError,
+  SantaWorkshopService,
+} from "../src/santaWorkshopService";
+import { reportingFailurePredicate } from "./failureReporter";
 
-describe('SantaWorkshopService', () => {
-    let service: SantaWorkshopService;
+describe("SantaWorkshopService", () => {
+  const maxWeight = 20;
+  let service: SantaWorkshopService;
 
-    beforeEach(() => {
-        service = new SantaWorkshopService();
-    });
+  beforeAll(() => {
+    fc.configureGlobal({ numRuns: 100 });
+  });
 
-    it('should prepare a gift with valid parameters', () => {
-        const giftName = 'Bitzee';
-        const weight = 3;
-        const color = 'Purple';
-        const material = 'Plastic';
+  beforeEach(() => {
+    service = new SantaWorkshopService({ maxWeight });
+  });
 
-        const gift = service.prepareGift(giftName, weight, color, material);
+  it("should fuzz prepare a gift with valid parameters", () => {
+    fc.assert(
+      fc.property(
+        fc.record({
+          giftName: fc.string(),
+          weight: fc.integer({ min: 1, max: maxWeight }),
+          color: fc.string(),
+          material: fc.string(),
+        }),
+        reportingFailurePredicate(
+          ({ giftName, weight, color, material }) =>
+            service.prepareGift(giftName, weight, color, material) instanceof
+            Gift
+        )
+      )
+    );
+  });
 
-        expect(gift).toBeInstanceOf(Gift);
-    });
+  it("should fuzz throw an error if gift is too light", () => {
+    fc.assert(
+      fc.property(
+        fc.record({
+          giftName: fc.string(),
+          weight: fc.oneof(fc.integer({ max: 0 })),
+          color: fc.string(),
+          material: fc.string(),
+        }),
+        reportingFailurePredicate(({ giftName, weight, color, material }) => {
+          try {
+            service.prepareGift(giftName, weight, color, material);
+          } catch (error) {
+            return error instanceof GiftTooLightError;
+          }
+        })
+      )
+    );
+  });
 
-    it('should throw an error if gift is too heavy', () => {
-        const giftName = 'Dog-E';
-        const weight = 6;
-        const color = 'White';
-        const material = 'Metal';
+  it("should fuzz throw an error if gift is too heavy", () => {
+    fc.assert(
+      fc.property(
+        fc.record({
+          giftName: fc.string(),
+          weight: fc.oneof(fc.integer({ min: maxWeight + 1 })),
+          color: fc.string(),
+          material: fc.string(),
+        }),
+        reportingFailurePredicate(({ giftName, weight, color, material }) => {
+          try {
+            service.prepareGift(giftName, weight, color, material);
+          } catch (error) {
+            return error instanceof GiftTooHeavyError;
+          }
+        })
+      )
+    );
+  });
 
-        expect(() => service.prepareGift(giftName, weight, color, material)).toThrow('Gift is too heavy for Santa\'s sleigh');
-    });
+  it("should fuzzy add an attribute to a gift", () => {
+    const gift = () => new Gift("Furby", 1, "Multi", "Cotton");
 
-    it('should add an attribute to a gift', () => {
-        const giftName = 'Furby';
-        const weight = 1;
-        const color = 'Multi';
-        const material = 'Cotton';
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 0 }),
+        reportingFailurePredicate((age) => {
+          const g = gift();
+          g.addAttribute("recommendedAge", age.toString());
+          return g.getRecommendedAge() === age;
+        })
+      )
+    );
+  });
 
-        const gift = service.prepareGift(giftName, weight, color, material);
-        gift.addAttribute('recommendedAge', '3');
+  it("should fuzzy assign a gift to a child", () => {
+    const gift = () => new Gift("Furby", 1, "Multi", "Cotton");
 
-        expect(gift.getRecommendedAge()).toBe(3);
-    });
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 1 }),
+        reportingFailurePredicate((childName) => {
+          const g = gift();
+          g.assignToChild(childName);
+          return g.toString().includes(`FOR ${childName}`);
+        })
+      )
+    );
+  });
 });
