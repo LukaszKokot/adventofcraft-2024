@@ -1,4 +1,4 @@
-import {fizzbuzz, max, min} from '../src/fizzbuzz';
+import {game, max, min} from '../src/fizzbuzz';
 import * as O from 'fp-ts/Option';
 import {isNone, isSome} from 'fp-ts/Option';
 import * as fc from 'fast-check';
@@ -19,7 +19,7 @@ describe('FizzBuzz should return', () => {
         [30, 'FizzBuzz'],
         [45, 'FizzBuzz']
     ])('its representation %s -> %s', (input, expectedResult) => {
-        const conversionResult = fizzbuzz(input);
+        const conversionResult = fizzbuzzGame.fizzbuzz(input);
         expect(isSome(conversionResult)).toBeTruthy();
 
         if (isSome(conversionResult)) {
@@ -36,8 +36,14 @@ describe('FizzBuzz should return', () => {
         );
     });
 
+    const fizzbuzzGame = game(new Map([
+        [15, 'FizzBuzz'],
+        [3, 'Fizz'],
+        [5, 'Buzz'],
+    ]));
+
     const isConvertValid = (input: number): boolean => pipe(
-        fizzbuzz(input),
+        fizzbuzzGame.fizzbuzz(input),
         O.exists(result => validStringsFor(input).includes(result))
     );
 
@@ -47,7 +53,7 @@ describe('FizzBuzz should return', () => {
         fc.assert(
             fc.property(
                 fc.integer().filter(n => n < min || n > max),
-                (n) => isNone(fizzbuzz(n))
+                (n) => isNone(fizzbuzzGame.fizzbuzz(n))
             )
         );
     });
