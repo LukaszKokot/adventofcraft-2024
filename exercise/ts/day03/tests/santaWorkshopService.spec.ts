@@ -1,9 +1,10 @@
 import * as fc from "fast-check";
 import { Gift } from "../src/gift";
-import { MAX_WEIGHT, SantaWorkshopService } from "../src/santaWorkshopService";
+import { SantaWorkshopService } from "../src/santaWorkshopService";
 import { neverFailingPredicate } from "./failureReporter";
 
 describe("SantaWorkshopService", () => {
+  const maxWeight = 20;
   let service: SantaWorkshopService;
 
   beforeAll(() => {
@@ -11,7 +12,7 @@ describe("SantaWorkshopService", () => {
   });
 
   beforeEach(() => {
-    service = new SantaWorkshopService();
+    service = new SantaWorkshopService({ maxWeight });
   });
 
   it("should fuzz prepare a gift with valid parameters", () => {
@@ -19,7 +20,7 @@ describe("SantaWorkshopService", () => {
       fc.property(
         fc.record({
           giftName: fc.string(),
-          weight: fc.integer({ min: 0, max: MAX_WEIGHT }),
+          weight: fc.integer({ min: 0, max: maxWeight }),
           color: fc.string(),
           material: fc.string(),
         }),
@@ -37,7 +38,7 @@ describe("SantaWorkshopService", () => {
       fc.property(
         fc.record({
           giftName: fc.string(),
-          weight: fc.oneof(fc.integer({ min: MAX_WEIGHT + 1 })),
+          weight: fc.oneof(fc.integer({ min: maxWeight + 1 })),
           color: fc.string(),
           material: fc.string(),
         }),

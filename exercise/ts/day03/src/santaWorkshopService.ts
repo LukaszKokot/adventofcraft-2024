@@ -4,6 +4,11 @@ export const MAX_WEIGHT = 5;
 
 export class SantaWorkshopService {
   private preparedGifts: Gift[] = [];
+  private maxWeight: number;
+
+  constructor({ maxWeight = MAX_WEIGHT }: { maxWeight?: number } = {}) {
+    this.maxWeight = maxWeight;
+  }
 
   public prepareGift(
     giftName: string,
@@ -11,7 +16,7 @@ export class SantaWorkshopService {
     color: string,
     material: string
   ): Gift {
-    if (weight > MAX_WEIGHT) {
+    if (weight > this.maxWeight) {
       throw new Error("Gift is too heavy for Santa's sleigh");
     }
 
