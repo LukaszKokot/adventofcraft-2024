@@ -1,16 +1,42 @@
-import { Gift } from './gift';
+import { Gift } from "./gift";
+
+export const MAX_WEIGHT = 5;
 
 export class SantaWorkshopService {
-    private preparedGifts: Gift[] = [];
+  private preparedGifts: Gift[] = [];
+  private maxWeight: number;
 
-    public prepareGift(giftName: string, weight: number, color: string, material: string): Gift {
-        if (weight > 5) {
-            throw new Error('Gift is too heavy for Santa\'s sleigh');
-        }
+  constructor({ maxWeight = MAX_WEIGHT }: { maxWeight?: number } = {}) {
+    this.maxWeight = maxWeight;
+  }
 
-        const gift = new Gift(giftName, weight, color, material);
-        this.preparedGifts.push(gift);
-
-        return gift;
+  public prepareGift(
+    giftName: string,
+    weight: number,
+    color: string,
+    material: string
+  ): Gift {
+    if (weight <= 0) {
+      throw new GiftTooLightError();
     }
+    if (weight > this.maxWeight) {
+      throw new GiftTooHeavyError();
+    }
+
+    const gift = new Gift(giftName, weight, color, material);
+    this.preparedGifts.push(gift);
+
+    return gift;
+  }
+}
+export class GiftTooLightError extends Error {
+  constructor() {
+    super("Gift cannot have a negative weight");
+  }
+}
+
+export class GiftTooHeavyError extends Error {
+  constructor() {
+    super("Gift is too heavy for Santa's sleigh");
+  }
 }
