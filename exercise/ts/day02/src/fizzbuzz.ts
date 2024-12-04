@@ -12,6 +12,7 @@ export interface GameRules {
 export const game = ({ mapping, min = MIN, max = MAX }: GameRules) => {
   const convertSafely = (input: number): string => {
     let result = "";
+    
     for (const [divisor, value] of mapping) {
       if (is(divisor, input)) {
         result += value;
