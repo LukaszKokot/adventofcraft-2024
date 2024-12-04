@@ -2,7 +2,7 @@ import * as fc from "fast-check";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { isNone, isSome } from "fp-ts/Option";
-import { game, max, min } from "../src/fizzbuzz";
+import { game, MAX, MIN } from "../src/fizzbuzz";
 
 describe("FizzBuzz should return", () => {
   const fizzbuzzGame = game({
@@ -60,7 +60,7 @@ describe("FizzBuzz should return", () => {
   test("valid strings for numbers between 1 and 100", () => {
     fc.assert(
       fc.property(
-        fc.integer().filter((n) => n >= min && n <= max),
+        fc.integer().filter((n) => n >= MIN && n <= MAX),
         (n) => isConvertValid(n)
       )
     );
@@ -69,7 +69,7 @@ describe("FizzBuzz should return", () => {
   test("none for numbers out of range", () => {
     fc.assert(
       fc.property(
-        fc.integer().filter((n) => n < min || n > max),
+        fc.integer().filter((n) => n < MIN || n > MAX),
         (n) => isNone(fizzbuzzGame.fizzbuzz(n))
       )
     );
