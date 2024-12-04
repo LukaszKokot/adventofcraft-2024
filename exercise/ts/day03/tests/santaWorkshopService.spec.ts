@@ -2,6 +2,7 @@ import * as fc from "fast-check";
 import { Gift } from "../src/gift";
 import {
   GiftTooHeavyError,
+  GiftTooLightError,
   SantaWorkshopService,
 } from "../src/santaWorkshopService";
 import { neverFailingPredicate } from "./failureReporter";
@@ -23,7 +24,7 @@ describe("SantaWorkshopService", () => {
       fc.property(
         fc.record({
           giftName: fc.string(),
-          weight: fc.integer({ min: 0, max: maxWeight }),
+          weight: fc.integer({ min: 1, max: maxWeight }),
           color: fc.string(),
           material: fc.string(),
         }),
@@ -32,6 +33,26 @@ describe("SantaWorkshopService", () => {
             service.prepareGift(giftName, weight, color, material) instanceof
             Gift
         )
+      )
+    );
+  });
+
+  it("should fuzz throw an error if gift is too light", () => {
+    fc.assert(
+      fc.property(
+        fc.record({
+          giftName: fc.string(),
+          weight: fc.oneof(fc.integer({ max: 0 })),
+          color: fc.string(),
+          material: fc.string(),
+        }),
+        neverFailingPredicate(({ giftName, weight, color, material }) => {
+          try {
+            service.prepareGift(giftName, weight, color, material);
+          } catch (error) {
+            return error instanceof GiftTooLightError;
+          }
+        })
       )
     );
   });

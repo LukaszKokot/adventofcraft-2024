@@ -16,6 +16,9 @@ export class SantaWorkshopService {
     color: string,
     material: string
   ): Gift {
+    if (weight <= 0) {
+      throw new GiftTooLightError();
+    }
     if (weight > this.maxWeight) {
       throw new GiftTooHeavyError();
     }
@@ -24,6 +27,11 @@ export class SantaWorkshopService {
     this.preparedGifts.push(gift);
 
     return gift;
+  }
+}
+export class GiftTooLightError extends Error {
+  constructor() {
+    super("Gift cannot have a negative weight");
   }
 }
 
