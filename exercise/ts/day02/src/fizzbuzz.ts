@@ -5,12 +5,14 @@ export const max = 100;
 
 export const game = ({ mapping }: { mapping: Map<number, string> }) => {
   const convertSafely = (input: number): string => {
+    let result = "";
     for (const [divisor, value] of mapping) {
       if (is(divisor, input)) {
-        return value;
+        result += value;
       }
     }
-    return input.toString();
+
+    return result === '' ? input.toString() : result;
   };
 
   return {
