@@ -1,4 +1,4 @@
 class Email {
-    subject: string;
-    body: string;
+  subject: string;
+  body: string;
 }
