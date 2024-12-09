@@ -5,13 +5,16 @@ const genderCodes = new Map<Gender, number>([
   ["Catact", 3],
 ]);
 
-const eid = (gender: Gender) => {
+const eid = (gender: Gender, birth: number) => {
   const codifiedGender = genderToCode(gender);
-  return `${codifiedGender}0000000`;
+  const codifiedBirth = birthToCode(birth);
+  return `${codifiedGender}${codifiedBirth}00000`;
 };
 
-const genderToCode = (gender: Gender): number => {
-  return genderCodes.get(gender);
-};
+const genderToCode = (gender: Gender): string =>
+  genderCodes.get(gender).toString();
+
+const birthToCode = (birth: number): string =>
+  (birth % 100).toString().padStart(2, "0");
 
 export default eid;
