@@ -1,8 +1,9 @@
 import fc from "fast-check";
-import eid, { Gender } from "../src/eid";
+import eid, { BirthYearOutOfRangeError, Gender } from "../src/eid";
 
 describe("EID", () => {
   const defaultEid = eid("Sloubi", 42, 456);
+  fc.configureGlobal({ numRuns: 100 });
 
   test("is always exactly 8 characters long", () => {
     expect(defaultEid).toHaveLength(8);
@@ -28,14 +29,32 @@ describe("EID", () => {
   });
 
   test("has 2nd and 3rd characters matching birth", () => {
-    const isValidConvertedBirth = (eid: string, birth: number) => {
+    const isValidConvertedBirth = (eid: string, birthYear: number) => {
       const codedBirth = parseInt(eid.substring(1, 3));
-      return 0 <= codedBirth && codedBirth <= 99 && birth % 100 === codedBirth;
+      return (
+        0 <= codedBirth && codedBirth <= 99 && birthYear % 100 === codedBirth
+      );
     };
 
     fc.assert(
-      fc.property(fc.integer({ min: 0, max: 999 }), (birth) =>
-        isValidConvertedBirth(eid("Sloubi", birth, 456), birth)
+      fc.property(fc.integer({ min: 0, max: 999 }), (birthYear) =>
+        isValidConvertedBirth(eid("Sloubi", birthYear, 456), birthYear)
+      )
+    );
+  });
+
+  test("returns errors when birth year is outside of ranges", () => {
+    fc.assert(
+      fc.property(
+        fc.oneof(fc.integer({ max: -1 }), fc.integer({ min: 1000 })),
+        (birth) => {
+          try {
+            eid("Sloubi", birth, 456);
+            fail("Should have thrown an error");
+          } catch (error) {
+            return error instanceof BirthYearOutOfRangeError;
+          }
+        }
       )
     );
   });

@@ -6,11 +6,19 @@ const genderCodes = new Map<Gender, number>([
 ]);
 
 const eid = (gender: Gender, birthYear: number, birthOrder: number) => {
+  assertBirthYearIsWithinRange(birthYear);
+
   const codifiedGender = genderToCode(gender);
   const codifiedBirthYear = birthYearToCode(birthYear);
   const codifiedBirthOrder = birthOrderToCode(birthOrder);
 
   return `${codifiedGender}${codifiedBirthYear}${codifiedBirthOrder}00`;
+};
+
+const assertBirthYearIsWithinRange = (birthYear: number): void => {
+  if (birthYear < 0 || birthYear > 999) {
+    throw new BirthYearOutOfRangeError();
+  }
 };
 
 const genderToCode = (gender: Gender): string =>
@@ -21,5 +29,14 @@ const birthYearToCode = (birth: number): string =>
 
 const birthOrderToCode = (birth: number): string =>
   birth.toString().padStart(3, "0");
+
+abstract class EidError extends Error {}
+
+export class BirthYearOutOfRangeError extends EidError {
+  constructor() {
+    super("Birth year is out of range");
+    this.name = "BirthYearOutOfRangeError";
+  }
+}
 
 export default eid;
