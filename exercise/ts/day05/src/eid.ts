@@ -9,14 +9,14 @@ abstract class EidError extends Error {}
 
 export class BirthYearOutOfRangeError extends EidError {
   constructor() {
-    super("Birth year is out of range");
+    super("Birth year is out of range, must be between 0 and 999");
     this.name = "BirthYearOutOfRangeError";
   }
 }
 
 export class BirthOrderOutOfRangeError extends EidError {
   constructor() {
-    super("Birth order is out of range");
+    super("Birth order is out of range, must be between 1 and 999");
     this.name = "BirthOrderOutOfRangeError";
   }
 }
