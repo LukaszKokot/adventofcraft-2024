@@ -2,7 +2,7 @@ import fc from "fast-check";
 import eid, { Gender } from "../src/eid";
 
 describe("EID", () => {
-  const defaultEid = eid("Sloubi", 42);
+  const defaultEid = eid("Sloubi", 42, 456);
 
   test("is always exactly 8 characters long", () => {
     expect(defaultEid).toHaveLength(8);
@@ -21,7 +21,7 @@ describe("EID", () => {
           fc.constant<Gender>("Catact")
         ),
         (gender) =>
-          eid(gender, 42)[0] ===
+          eid(gender, 42, 456)[0] ===
           (gender === "Sloubi" ? "1" : gender === "Gagna" ? "2" : "3")
       )
     );
@@ -35,7 +35,24 @@ describe("EID", () => {
 
     fc.assert(
       fc.property(fc.integer({ min: 0, max: 999 }), (birth) =>
-        isValidConvertedBirth(eid("Sloubi", birth), birth)
+        isValidConvertedBirth(eid("Sloubi", birth, 456), birth)
+      )
+    );
+  });
+
+  test("has 4th, 5th and 6th characters matching birth order", () => {
+    const isValidBirthOrder = (eid: string, birthOrder: number) => {
+      const codedBirthOrder = parseInt(eid.substring(3, 6));
+      return (
+        0 <= codedBirthOrder &&
+        codedBirthOrder <= 999 &&
+        birthOrder === codedBirthOrder
+      );
+    };
+
+    fc.assert(
+      fc.property(fc.integer({ min: 1, max: 999 }), (birthOrder) =>
+        isValidBirthOrder(eid("Sloubi", 42, birthOrder), birthOrder)
       )
     );
   });
