@@ -7,7 +7,7 @@ import eid, {
 
 describe("EID", () => {
   const defaultEid = eid("Sloubi", 42, 456);
-  fc.configureGlobal({ numRuns: 100 });
+  fc.configureGlobal({ numRuns: 100, verbose: true });
 
   test("is always exactly 8 characters long", () => {
     expect(defaultEid).toHaveLength(8);
@@ -92,6 +92,34 @@ describe("EID", () => {
             return error instanceof BirthOrderOutOfRangeError;
           }
         }
+      )
+    );
+  });
+
+  test("has 7th and 8th characters being the control key", () => {
+    const isValidControlKey = (eid: string) => {
+      const controlKey = eid.substring(6);
+      return (
+        controlKey ===
+        ((parseInt(eid.substring(0, 6)) + 97) % 97).toString().padStart(2, "0")
+      );
+    };
+
+    fc.assert(
+      fc.property(
+        fc.record({
+          birthOrder: fc.integer({ min: 1, max: 999 }),
+          birthYear: fc.integer({ min: 0, max: 999 }),
+          gender: fc.oneof(
+            fc.constant<Gender>("Sloubi"),
+            fc.constant<Gender>("Gagna"),
+            fc.constant<Gender>("Catact")
+          ),
+        }),
+        (record) =>
+          isValidControlKey(
+            eid(record.gender, record.birthYear, record.birthOrder)
+          )
       )
     );
   });

@@ -42,6 +42,15 @@ const birthYearToCode = (birth: number): string =>
 const birthOrderToCode = (birth: number): string =>
   birth.toString().padStart(3, "0");
 
+const createControlKey = (
+  gender: string,
+  birthYear: string,
+  birthOrder: string
+): string =>
+  ((parseInt(`${gender}${birthYear}${birthOrder}`) + 97) % 97)
+    .toString()
+    .padStart(2, "0");
+
 const eid = (gender: Gender, birthYear: number, birthOrder: number) => {
   assertBirthYearIsWithinRange(birthYear);
   assertBirthOrderIsWithinRange(birthOrder);
@@ -49,8 +58,13 @@ const eid = (gender: Gender, birthYear: number, birthOrder: number) => {
   const codifiedGender = genderToCode(gender);
   const codifiedBirthYear = birthYearToCode(birthYear);
   const codifiedBirthOrder = birthOrderToCode(birthOrder);
+  const controlKey = createControlKey(
+    codifiedGender,
+    codifiedBirthYear,
+    codifiedBirthOrder
+  );
 
-  return `${codifiedGender}${codifiedBirthYear}${codifiedBirthOrder}00`;
+  return `${codifiedGender}${codifiedBirthYear}${codifiedBirthOrder}${controlKey}`;
 };
 
 export default eid;
