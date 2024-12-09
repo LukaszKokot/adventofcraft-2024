@@ -1,5 +1,9 @@
 import fc from "fast-check";
-import eid, { BirthYearOutOfRangeError, Gender } from "../src/eid";
+import eid, {
+  BirthOrderOutOfRangeError,
+  BirthYearOutOfRangeError,
+  Gender,
+} from "../src/eid";
 
 describe("EID", () => {
   const defaultEid = eid("Sloubi", 42, 456);
@@ -72,6 +76,22 @@ describe("EID", () => {
     fc.assert(
       fc.property(fc.integer({ min: 1, max: 999 }), (birthOrder) =>
         isValidBirthOrder(eid("Sloubi", 42, birthOrder), birthOrder)
+      )
+    );
+  });
+
+  test("returns errors when birth order is outside of ranges", () => {
+    fc.assert(
+      fc.property(
+        fc.oneof(fc.integer({ max: 0 }), fc.integer({ min: 1000 })),
+        (birthOrder) => {
+          try {
+            eid("Sloubi", 42, birthOrder);
+            fail("Should have thrown an error");
+          } catch (error) {
+            return error instanceof BirthOrderOutOfRangeError;
+          }
+        }
       )
     );
   });

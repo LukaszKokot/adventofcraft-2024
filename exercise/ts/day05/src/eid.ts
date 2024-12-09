@@ -5,19 +5,31 @@ const genderCodes = new Map<Gender, number>([
   ["Catact", 3],
 ]);
 
-const eid = (gender: Gender, birthYear: number, birthOrder: number) => {
-  assertBirthYearIsWithinRange(birthYear);
+abstract class EidError extends Error {}
 
-  const codifiedGender = genderToCode(gender);
-  const codifiedBirthYear = birthYearToCode(birthYear);
-  const codifiedBirthOrder = birthOrderToCode(birthOrder);
+export class BirthYearOutOfRangeError extends EidError {
+  constructor() {
+    super("Birth year is out of range");
+    this.name = "BirthYearOutOfRangeError";
+  }
+}
 
-  return `${codifiedGender}${codifiedBirthYear}${codifiedBirthOrder}00`;
-};
+export class BirthOrderOutOfRangeError extends EidError {
+  constructor() {
+    super("Birth order is out of range");
+    this.name = "BirthOrderOutOfRangeError";
+  }
+}
 
 const assertBirthYearIsWithinRange = (birthYear: number): void => {
   if (birthYear < 0 || birthYear > 999) {
     throw new BirthYearOutOfRangeError();
+  }
+};
+
+const assertBirthOrderIsWithinRange = (birthOrder: number): void => {
+  if (birthOrder < 1 || birthOrder > 999) {
+    throw new BirthOrderOutOfRangeError();
   }
 };
 
@@ -30,13 +42,15 @@ const birthYearToCode = (birth: number): string =>
 const birthOrderToCode = (birth: number): string =>
   birth.toString().padStart(3, "0");
 
-abstract class EidError extends Error {}
+const eid = (gender: Gender, birthYear: number, birthOrder: number) => {
+  assertBirthYearIsWithinRange(birthYear);
+  assertBirthOrderIsWithinRange(birthOrder);
 
-export class BirthYearOutOfRangeError extends EidError {
-  constructor() {
-    super("Birth year is out of range");
-    this.name = "BirthYearOutOfRangeError";
-  }
-}
+  const codifiedGender = genderToCode(gender);
+  const codifiedBirthYear = birthYearToCode(birthYear);
+  const codifiedBirthOrder = birthOrderToCode(birthOrder);
+
+  return `${codifiedGender}${codifiedBirthYear}${codifiedBirthOrder}00`;
+};
 
 export default eid;
