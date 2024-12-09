@@ -51,7 +51,15 @@ const createControlKey = (
     .toString()
     .padStart(2, "0");
 
-const eid = (gender: Gender, birthYear: number, birthOrder: number) => {
+const eid = ({
+  gender,
+  birthYear,
+  birthOrder,
+}: {
+  gender: Gender;
+  birthYear: number;
+  birthOrder: number;
+}) => {
   assertBirthYearIsWithinRange(birthYear);
   assertBirthOrderIsWithinRange(birthOrder);
 

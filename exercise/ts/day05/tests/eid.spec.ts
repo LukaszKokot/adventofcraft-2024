@@ -6,28 +6,42 @@ import eid, {
 } from "../src/eid";
 
 describe("EID", () => {
-  const defaultEid = eid("Sloubi", 42, 456);
   fc.configureGlobal({ numRuns: 100, verbose: true });
 
+  const validRecord = () =>
+    fc.record({
+      birthOrder: fc.integer({ min: 1, max: 999 }),
+      birthYear: fc.integer({ min: 0, max: 999 }),
+      gender: fc.oneof(
+        fc.constant<Gender>("Sloubi"),
+        fc.constant<Gender>("Gagna"),
+        fc.constant<Gender>("Catact")
+      ),
+    });
+
   test("is always exactly 8 characters long", () => {
-    expect(defaultEid).toHaveLength(8);
+    fc.assert(fc.property(validRecord(), (record) => eid(record).length === 8));
   });
 
   test("is composed of numerical characters only", () => {
-    expect(defaultEid).toMatch(/^\d+$/);
+    fc.assert(
+      fc.property(validRecord(), (record) => {
+        expect(eid(record)).toMatch(/^\d+$/);
+        return true;
+      })
+    );
   });
 
   test("has 1st character matching gender", () => {
+    const isValidConvertedGender = (eid: string, gender: Gender) => {
+      return (
+        eid[0] === (gender === "Sloubi" ? "1" : gender === "Gagna" ? "2" : "3")
+      );
+    };
+
     fc.assert(
-      fc.property(
-        fc.oneof(
-          fc.constant<Gender>("Sloubi"),
-          fc.constant<Gender>("Gagna"),
-          fc.constant<Gender>("Catact")
-        ),
-        (gender) =>
-          eid(gender, 42, 456)[0] ===
-          (gender === "Sloubi" ? "1" : gender === "Gagna" ? "2" : "3")
+      fc.property(validRecord(), (record) =>
+        isValidConvertedGender(eid(record), record.gender)
       )
     );
   });
@@ -41,8 +55,8 @@ describe("EID", () => {
     };
 
     fc.assert(
-      fc.property(fc.integer({ min: 0, max: 999 }), (birthYear) =>
-        isValidConvertedBirth(eid("Sloubi", birthYear, 456), birthYear)
+      fc.property(validRecord(), (record) =>
+        isValidConvertedBirth(eid(record), record.birthYear)
       )
     );
   });
@@ -50,10 +64,16 @@ describe("EID", () => {
   test("returns errors when birth year is outside of ranges", () => {
     fc.assert(
       fc.property(
-        fc.oneof(fc.integer({ max: -1 }), fc.integer({ min: 1000 })),
-        (birth) => {
+        fc.record({
+          eid: validRecord(),
+          birthYear: fc.oneof(
+            fc.integer({ max: -1 }),
+            fc.integer({ min: 1000 })
+          ),
+        }),
+        (record) => {
           try {
-            eid("Sloubi", birth, 456);
+            eid({ ...record.eid, birthYear: record.birthYear });
             fail("Should have thrown an error");
           } catch (error) {
             return error instanceof BirthYearOutOfRangeError;
@@ -74,8 +94,16 @@ describe("EID", () => {
     };
 
     fc.assert(
-      fc.property(fc.integer({ min: 1, max: 999 }), (birthOrder) =>
-        isValidBirthOrder(eid("Sloubi", 42, birthOrder), birthOrder)
+      fc.property(
+        fc.record({
+          eid: validRecord(),
+          birthOrder: fc.integer({ min: 1, max: 999 }),
+        }),
+        (record) =>
+          isValidBirthOrder(
+            eid({ ...record.eid, birthOrder: record.birthOrder }),
+            record.birthOrder
+          )
       )
     );
   });
@@ -83,11 +111,17 @@ describe("EID", () => {
   test("returns errors when birth order is outside of ranges", () => {
     fc.assert(
       fc.property(
-        fc.oneof(fc.integer({ max: 0 }), fc.integer({ min: 1000 })),
-        (birthOrder) => {
+        fc.record({
+          eid: validRecord(),
+          birthOrder: fc.oneof(
+            fc.integer({ max: 0 }),
+            fc.integer({ min: 1000 })
+          ),
+        }),
+        (record) => {
           try {
-            eid("Sloubi", 42, birthOrder);
-            fail("Should have thrown an error");
+            eid({ ...record.eid, birthOrder: record.birthOrder }),
+              fail("Should have thrown an error");
           } catch (error) {
             return error instanceof BirthOrderOutOfRangeError;
           }
@@ -106,21 +140,7 @@ describe("EID", () => {
     };
 
     fc.assert(
-      fc.property(
-        fc.record({
-          birthOrder: fc.integer({ min: 1, max: 999 }),
-          birthYear: fc.integer({ min: 0, max: 999 }),
-          gender: fc.oneof(
-            fc.constant<Gender>("Sloubi"),
-            fc.constant<Gender>("Gagna"),
-            fc.constant<Gender>("Catact")
-          ),
-        }),
-        (record) =>
-          isValidControlKey(
-            eid(record.gender, record.birthYear, record.birthOrder)
-          )
-      )
+      fc.property(validRecord(), (record) => isValidControlKey(eid(record)))
     );
   });
 });
