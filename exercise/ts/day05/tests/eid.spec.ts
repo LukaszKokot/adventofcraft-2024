@@ -135,7 +135,7 @@ describe("EID", () => {
       const controlKey = eid.substring(6);
       return (
         controlKey ===
-        ((parseInt(eid.substring(0, 6)) + 97) % 97).toString().padStart(2, "0")
+        (97 - (parseInt(eid.substring(0, 6)) % 97)).toString().padStart(2, "0")
       );
     };
 

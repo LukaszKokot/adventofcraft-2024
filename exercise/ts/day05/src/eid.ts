@@ -47,7 +47,7 @@ const createControlKey = (
   birthYear: string,
   birthOrder: string
 ): string =>
-  ((parseInt(`${gender}${birthYear}${birthOrder}`) + 97) % 97)
+  (97 - (parseInt(`${gender}${birthYear}${birthOrder}`) % 97))
     .toString()
     .padStart(2, "0");
 
