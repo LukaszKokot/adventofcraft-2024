@@ -7,8 +7,7 @@ describe("EID", () => {
     expect(result).toHaveLength(8);
   });
 
-describe('EID', () => {
-    test('implement your tests here', () => {
-        expect(43).toBe(42);
-    });
+  test("is composed of numerical characters only", () => {
+    expect(result).toMatch(/^\d+$/);
+  });
 });
