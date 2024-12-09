@@ -1,5 +1,5 @@
 import fc from "fast-check";
-import eid from "../src/eid";
+import eid, { Gender } from "../src/eid";
 
 describe("EID", () => {
   const defaultEid = eid("Sloubi");
@@ -16,9 +16,9 @@ describe("EID", () => {
     fc.assert(
       fc.property(
         fc.oneof(
-          fc.constant("Sloubi"),
-          fc.constant("Gagna"),
-          fc.constant("Catact")
+          fc.constant<Gender>("Sloubi"),
+          fc.constant<Gender>("Gagna"),
+          fc.constant<Gender>("Catact")
         ),
         (gender) =>
           eid(gender)[0] ===
