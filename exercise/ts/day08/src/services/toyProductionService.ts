@@ -8,10 +8,10 @@ export class ToyProductionService {
     this.repository = repository;
   }
 
-  assignToyToElf(toyName: string): void {
+  assignToyToElf(toyName: string, elfName: string): void {
     const toy = this.repository.findByName(toyName);
     if (toy && toy.getState() === Toy.State.UNASSIGNED) {
-      toy.assignToyToElf();
+      toy.assignToyToElf(elfName);
       this.repository.save(toy);
     }
   }

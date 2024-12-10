@@ -14,7 +14,7 @@ export class Toy {
     this.state = state;
   }
 
-  assignToyToElf(elf?: string): void {
+  assignToyToElf(elf: string): void {
     this.setAssignedElf(elf);
     this.setState(Toy.State.IN_PRODUCTION);
   }
@@ -31,7 +31,7 @@ export class Toy {
     return this.state;
   }
 
-  private setAssignedElf(elf?: string): void {
+  private setAssignedElf(elf: string): void {
     this.elf = elf;
   }
 
