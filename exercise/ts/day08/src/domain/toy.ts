@@ -1,27 +1,29 @@
 export class Toy {
-    static State = {
-        UNASSIGNED: 'UNASSIGNED',
-        IN_PRODUCTION: 'IN_PRODUCTION',
-        COMPLETED: 'COMPLETED'
-    };
+  static State = {
+    UNASSIGNED: "UNASSIGNED",
+    IN_PRODUCTION: "IN_PRODUCTION",
+    COMPLETED: "COMPLETED",
+  };
 
-    private readonly name: string;
-    private state: string;
+  private readonly name: string;
+  private state: string;
 
-    constructor(name: string, state: string) {
-        this.name = name;
-        this.state = state;
-    }
+  constructor(name: string, state: string) {
+    this.name = name;
+    this.state = state;
+  }
 
-    getName(): string {
-        return this.name;
-    }
+  assignToy;
 
-    getState(): string {
-        return this.state;
-    }
+  getName(): string {
+    return this.name;
+  }
 
-    setState(state: string): void {
-        this.state = state;
-    }
+  getState(): string {
+    return this.state;
+  }
+
+  setState(state: string): void {
+    this.state = state;
+  }
 }
