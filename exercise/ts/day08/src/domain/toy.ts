@@ -15,6 +15,10 @@ export class Toy {
   }
 
   assignToyToElf(elf: string): void {
+    if (this.getState() !== Toy.State.UNASSIGNED) {
+      throw new ToyUnassignableError(elf);
+    }
+
     this.setAssignedElf(elf);
     this.setState(Toy.State.IN_PRODUCTION);
   }
@@ -37,5 +41,11 @@ export class Toy {
 
   private setState(state: string): void {
     this.state = state;
+  }
+}
+
+export class ToyUnassignableError extends Error {
+  constructor(elfName: string) {
+    super(`Toy already assigned to ${elfName}`);
   }
 }

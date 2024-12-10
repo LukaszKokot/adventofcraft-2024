@@ -1,4 +1,4 @@
-import { Toy } from "../src/domain/toy";
+import { Toy, ToyUnassignableError } from "../src/domain/toy";
 import { ToyProductionService } from "../src/services/toyProductionService";
 import {
   InMemoryToyRepository,
@@ -11,16 +11,33 @@ describe("ToyProductionService", () => {
 
   describe("assigning a toy to an elf", () => {
     describe("when the toy exists", () => {
-      it("should pass the item to production", () => {
-        const repository = new InMemoryToyRepository();
-        const service = new ToyProductionService(repository);
-        repository.save(new Toy(TOY_NAME, Toy.State.UNASSIGNED));
+      describe("and the toy is unassigned", () => {
+        it("should pass the item to production", () => {
+          const repository = new InMemoryToyRepository();
+          const service = new ToyProductionService(repository);
+          repository.save(new Toy(TOY_NAME, Toy.State.UNASSIGNED));
 
-        service.assignToyToElf(TOY_NAME, ELF_NAME);
+          service.assignToyToElf(TOY_NAME, ELF_NAME);
 
-        const toy = repository.findByName(TOY_NAME);
-        expect(toy?.getAssignedElf()).toBe(ELF_NAME);
-        expect(toy?.getState()).toBe(Toy.State.IN_PRODUCTION);
+          const toy = repository.findByName(TOY_NAME);
+          expect(toy?.getAssignedElf()).toBe(ELF_NAME);
+          expect(toy?.getState()).toBe(Toy.State.IN_PRODUCTION);
+        });
+      });
+
+      describe("and the toy is already unassigned", () => {
+        it("should throw an error", () => {
+          const repository = new InMemoryToyRepository();
+          const service = new ToyProductionService(repository);
+          repository.save(new Toy(TOY_NAME, Toy.State.UNASSIGNED));
+
+          service.assignToyToElf(TOY_NAME, ELF_NAME);
+          try {
+            service.assignToyToElf(TOY_NAME, ELF_NAME);
+          } catch (error) {
+            expect(error).toBeInstanceOf(ToyUnassignableError);
+          }
+        });
       });
     });
 
