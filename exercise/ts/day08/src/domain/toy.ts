@@ -23,6 +23,15 @@ export class Toy {
     this.setState(Toy.State.IN_PRODUCTION);
   }
 
+  completeAssignment(): void {
+    if (this.getState() !== Toy.State.IN_PRODUCTION) {
+      throw new ToyNotInProductionError();
+    }
+
+    this.setAssignedElf(undefined);
+    this.setState(Toy.State.COMPLETED);
+  }
+
   getAssignedElf(): string | undefined {
     return this.elf;
   }
@@ -44,8 +53,16 @@ export class Toy {
   }
 }
 
-export class ToyUnassignableError extends Error {
+abstract class ToyError extends Error {}
+
+export class ToyUnassignableError extends ToyError {
   constructor(elfName: string) {
     super(`Toy already assigned to ${elfName}`);
   }
 }
+
+export const ToyNotInProductionError = class extends ToyError {
+  constructor() {
+    super("Toy not assigned");
+  }
+};

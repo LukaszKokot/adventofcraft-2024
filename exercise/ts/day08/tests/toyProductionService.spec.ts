@@ -1,4 +1,8 @@
-import { Toy, ToyUnassignableError } from "../src/domain/toy";
+import {
+  Toy,
+  ToyNotInProductionError,
+  ToyUnassignableError,
+} from "../src/domain/toy";
 import { ToyProductionService } from "../src/services/toyProductionService";
 import {
   InMemoryToyRepository,
@@ -51,6 +55,41 @@ describe("ToyProductionService", () => {
           fail("It should have thrown an error");
         } catch (error) {
           expect(error).toBeInstanceOf(ToyNotFoundError);
+        }
+      });
+    });
+  });
+
+  describe("completing an assignment", () => {
+    describe("of an toy in-production", () => {
+      it("should succeed", () => {
+        const repository = new InMemoryToyRepository();
+        const service = new ToyProductionService(repository);
+        repository.save(new Toy(TOY_NAME, Toy.State.UNASSIGNED));
+
+        service.assignToyToElf(TOY_NAME, ELF_NAME);
+        service.completeAssignment(TOY_NAME);
+
+        const toy = repository.findByName(TOY_NAME);
+        expect(toy?.getAssignedElf()).toBeUndefined();
+        expect(toy?.getState()).toBe(Toy.State.COMPLETED);
+      });
+    });
+
+    describe("of an unassigned toy", () => {
+      it("should throw an error", () => {
+        const repository = new InMemoryToyRepository();
+        const service = new ToyProductionService(repository);
+        repository.save(new Toy(TOY_NAME, Toy.State.UNASSIGNED));
+
+        service.assignToyToElf(TOY_NAME, ELF_NAME);
+        service.completeAssignment(TOY_NAME);
+
+        try {
+          service.completeAssignment(TOY_NAME);
+          fail("It should have thrown an error");
+        } catch (error) {
+          expect(error).toBeInstanceOf(ToyNotInProductionError);
         }
       });
     });

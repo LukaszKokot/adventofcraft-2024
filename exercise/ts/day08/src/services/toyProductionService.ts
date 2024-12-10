@@ -12,4 +12,10 @@ export class ToyProductionService {
     toy.assignToyToElf(elfName);
     this.repository.save(toy);
   }
+
+  completeAssignment(toyName: string): void {
+    const toy = this.repository.findByName(toyName);
+    toy.completeAssignment();
+    this.repository.save(toy);
+  }
 }
