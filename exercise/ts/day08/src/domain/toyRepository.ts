@@ -1,6 +1,6 @@
-import {Toy} from "./toy";
+import { Toy } from "./toy";
 
 export interface ToyRepository {
-    findByName(name: string): Toy | null;
-    save(toy: Toy): void;
+  findByName(name: string): Toy | null;
+  save(toy: Toy): void;
 }
