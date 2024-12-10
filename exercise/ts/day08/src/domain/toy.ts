@@ -5,6 +5,7 @@ export class Toy {
     COMPLETED: "COMPLETED",
   };
 
+  private elf?: string;
   private readonly name: string;
   private state: string;
 
@@ -13,7 +14,14 @@ export class Toy {
     this.state = state;
   }
 
-  assignToy;
+  assignToyToElf(elf?: string): void {
+    this.setAssignedElf(elf);
+    this.setState(Toy.State.IN_PRODUCTION);
+  }
+
+  getAssignedElf(): string | undefined {
+    return this.elf;
+  }
 
   getName(): string {
     return this.name;
@@ -23,7 +31,11 @@ export class Toy {
     return this.state;
   }
 
-  setState(state: string): void {
+  private setAssignedElf(elf?: string): void {
+    this.elf = elf;
+  }
+
+  private setState(state: string): void {
     this.state = state;
   }
 }

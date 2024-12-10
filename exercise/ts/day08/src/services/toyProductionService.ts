@@ -11,7 +11,7 @@ export class ToyProductionService {
   assignToyToElf(toyName: string): void {
     const toy = this.repository.findByName(toyName);
     if (toy && toy.getState() === Toy.State.UNASSIGNED) {
-      toy.setState(Toy.State.IN_PRODUCTION);
+      toy.assignToyToElf();
       this.repository.save(toy);
     }
   }
