@@ -1,20 +1,41 @@
 import { Toy } from "../src/domain/toy";
 import { ToyProductionService } from "../src/services/toyProductionService";
-import { InMemoryToyRepository } from "./doubles/inMemoryToyRepository";
+import {
+  InMemoryToyRepository,
+  ToyNotFoundError,
+} from "./doubles/inMemoryToyRepository";
 
 describe("ToyProductionService", () => {
   const ELF_NAME = "Elf";
   const TOY_NAME = "Train";
 
-  it("assignToyToElfShouldPassTheItemInProduction", () => {
-    const repository = new InMemoryToyRepository();
-    const service = new ToyProductionService(repository);
-    repository.save(new Toy(TOY_NAME, Toy.State.UNASSIGNED));
+  describe("assigning a toy to an elf", () => {
+    describe("when the toy exists", () => {
+      it("should pass the item to production", () => {
+        const repository = new InMemoryToyRepository();
+        const service = new ToyProductionService(repository);
+        repository.save(new Toy(TOY_NAME, Toy.State.UNASSIGNED));
 
-    service.assignToyToElf(TOY_NAME, ELF_NAME);
+        service.assignToyToElf(TOY_NAME, ELF_NAME);
 
-    const toy = repository.findByName(TOY_NAME);
-    expect(toy?.getAssignedElf()).toBe(ELF_NAME);
-    expect(toy?.getState()).toBe(Toy.State.IN_PRODUCTION);
+        const toy = repository.findByName(TOY_NAME);
+        expect(toy?.getAssignedElf()).toBe(ELF_NAME);
+        expect(toy?.getState()).toBe(Toy.State.IN_PRODUCTION);
+      });
+    });
+
+    describe("when the toy does not exist", () => {
+      it("should throw an error", () => {
+        const repository = new InMemoryToyRepository();
+        const service = new ToyProductionService(repository);
+
+        try {
+          service.assignToyToElf(TOY_NAME, ELF_NAME);
+          fail("It should have thrown an error");
+        } catch (error) {
+          expect(error).toBeInstanceOf(ToyNotFoundError);
+        }
+      });
+    });
   });
 });
