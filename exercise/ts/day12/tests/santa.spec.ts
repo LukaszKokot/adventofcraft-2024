@@ -44,8 +44,20 @@ describe("Santa's gift selection process", () => {
 
     santa.addChild(bobby);
 
-    expect(() => santa.chooseToyForChild("alice")).toThrowError(
+    expect(() => santa.chooseToyForChild("alice")).toThrow(
       "No such child found"
+    );
+  });
+
+  it("should throw an exception if the behaviour does not exist", () => {
+    const santa = new Santa();
+    const bobby = new Child("bobby", undefined);
+    bobby.setWishlist(Playstation, Plush, Ball);
+
+    santa.addChild(bobby);
+
+    expect(() => santa.chooseToyForChild("bobby")).toThrow(
+      "Unknown behaviour: undefined"
     );
   });
 });
