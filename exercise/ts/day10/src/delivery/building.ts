@@ -1,25 +1,26 @@
+export type Instruction = "(" | ")" | "🧝";
+export type InstructionList = Instruction[];
+
+const stringToInstructions = (instructions: string): InstructionList => {
+  if (!/^[()🧝]+$/.test(instructions)) {
+    throw new Error("Invalid set of instructions");
+  }
+
+  return Array.from(instructions) as InstructionList;
+};
+
 export class Building {
-    static whichFloor(instructions: string): number {
-        let val: Array<[string, number]> = [];
+  private static santaMapping = { "(": -2, ")": 3, "🧝": 0 };
+  private static noSantaMapping = { "(": 1, ")": -1 };
+  private static mapping = [this.santaMapping, this.noSantaMapping];
 
-        for (let i = 0; i < instructions.length; i++) {
-            const c = instructions[i];
+  static whichFloor(instructions: string): number {
+    const instructionList = stringToInstructions(instructions);
+    const hasSanta = instructions.includes("🧝") ? 0 : 1;
 
-            if (instructions.includes("🧝")) {
-                const j = c === ')' ? 3 : -2;
-                val.push([c, j]);
-            } else if (!instructions.includes("🧝")) {
-                val.push([c, c === '(' ? 1 : -1]);
-            } else {
-                val.push([c, c === '(' ? 42 : -2]);
-            }
-        }
-
-        let result = 0;
-        for (const kp of val) {
-            result += kp[1];
-        }
-
-        return result;
-    }
+    return instructionList.reduce(
+      (acc, instruction) => acc + this.mapping[hasSanta][instruction],
+      0
+    );
+  }
 }
