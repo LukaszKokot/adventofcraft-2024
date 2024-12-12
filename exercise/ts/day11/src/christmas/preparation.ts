@@ -1,13 +1,21 @@
 import { ToyType } from "./toyType";
 
+export enum GiftPreparation {
+  NO_ONE = "No gifts to prepare.",
+  ELVES = "Elves will prepare the gifts.",
+  SANTA = "Santa will prepare the gifts.",
+}
+
+export const MAX_GIFTS_FOR_ELVES = 50;
+
 export class Preparation {
-  static prepareGifts(numberOfGifts: number): string {
+  static prepareGifts(numberOfGifts: number): GiftPreparation {
     if (numberOfGifts <= 0) {
-      return "No gifts to prepare.";
-    } else if (numberOfGifts < 50) {
-      return "Elves will prepare the gifts.";
+      return GiftPreparation.NO_ONE;
+    } else if (numberOfGifts < MAX_GIFTS_FOR_ELVES) {
+      return GiftPreparation.ELVES;
     }
-    return "Santa will prepare the gifts.";
+    return GiftPreparation.SANTA;
   }
 
   static categorizeGift(age: number): string {

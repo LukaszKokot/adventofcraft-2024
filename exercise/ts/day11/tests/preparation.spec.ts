@@ -1,19 +1,49 @@
-import { Preparation } from "../src/christmas/preparation";
+import fc from "fast-check";
+import {
+  GiftPreparation,
+  MAX_GIFTS_FOR_ELVES,
+  Preparation,
+} from "../src/christmas/preparation";
 import { ToyType } from "../src/christmas/toyType";
 
 describe("Preparation", () => {
-  test.each([
-    [-1, "No gifts to prepare."],
-    [0, "No gifts to prepare."],
-    [1, "Elves will prepare the gifts."],
-    [49, "Elves will prepare the gifts."],
-    [50, "Santa will prepare the gifts."],
-  ])(
-    "prepareGifts should return the correct preparation message for %d gifts",
-    (numberOfGifts, expected) => {
-      expect(Preparation.prepareGifts(numberOfGifts)).toBe(expected);
-    }
-  );
+  describe("when preparing", () => {
+    it("no one needs to do anything when there are no gifts", () => {
+      fc.assert(
+        fc.property(fc.integer({ max: 0 }), (numberOfGifts) => {
+          expect(Preparation.prepareGifts(numberOfGifts)).toBe(
+            GiftPreparation.NO_ONE
+          );
+        })
+      );
+    });
+
+    it(`elves need to prepare when number of gifts is below ${MAX_GIFTS_FOR_ELVES}`, () => {
+      fc.assert(
+        fc.property(
+          fc.integer({ min: 1, max: MAX_GIFTS_FOR_ELVES - 1 }),
+          (numberOfGifts) => {
+            expect(Preparation.prepareGifts(numberOfGifts)).toBe(
+              GiftPreparation.ELVES
+            );
+          }
+        )
+      );
+    });
+
+    it(`santa need to prepare the gifts when more than ${MAX_GIFTS_FOR_ELVES}`, () => {
+      fc.assert(
+        fc.property(
+          fc.integer({ min: MAX_GIFTS_FOR_ELVES }),
+          (numberOfGifts) => {
+            expect(Preparation.prepareGifts(numberOfGifts)).toBe(
+              GiftPreparation.SANTA
+            );
+          }
+        )
+      );
+    });
+  });
 
   test.each([
     [1, "Baby"],
