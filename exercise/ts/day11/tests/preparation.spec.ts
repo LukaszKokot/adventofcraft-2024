@@ -1,6 +1,10 @@
 import fc from "fast-check";
 import {
+  GiftCategory,
   GiftPreparation,
+  MAX_AGE_FOR_BABY,
+  MAX_AGE_FOR_CHILD,
+  MAX_AGE_FOR_TODDLER,
   MAX_GIFTS_FOR_ELVES,
   Preparation,
 } from "../src/christmas/preparation";
@@ -45,17 +49,24 @@ describe("Preparation", () => {
     });
   });
 
-  test.each([
-    [1, "Baby"],
-    [3, "Toddler"],
-    [6, "Child"],
-    [13, "Teen"],
-  ])(
-    "categorizeGift should return the correct category for age %d",
-    (age, expectedCategory) => {
-      expect(Preparation.categorizeGift(age)).toBe(expectedCategory);
-    }
-  );
+  describe.each([
+    [0, MAX_AGE_FOR_BABY, GiftCategory.BABY],
+    [MAX_AGE_FOR_BABY + 1, MAX_AGE_FOR_TODDLER, GiftCategory.TODDLER],
+    [MAX_AGE_FOR_TODDLER + 1, MAX_AGE_FOR_CHILD, GiftCategory.CHILD],
+    [MAX_AGE_FOR_CHILD + 1, undefined, GiftCategory.TEEN],
+  ])("when categorizing", (min, max, expected) => {
+    describe(`and age is above ${min} but below or equal to ${
+      max ?? "infinity"
+    }`, () => {
+      it(`should categorize for ${expected}`, () => {
+        fc.assert(
+          fc.property(fc.integer({ min, max }), (age) => {
+            expect(Preparation.categorizeGift(age)).toBe(expected);
+          })
+        );
+      });
+    });
+  });
 
   test.each([
     [ToyType.EDUCATIONAL, 25, 100, true],

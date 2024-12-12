@@ -6,7 +6,17 @@ export enum GiftPreparation {
   SANTA = "Santa will prepare the gifts.",
 }
 
+export enum GiftCategory {
+  BABY = "Baby",
+  TODDLER = "Toddler",
+  CHILD = "Child",
+  TEEN = "Teen",
+}
+
 export const MAX_GIFTS_FOR_ELVES = 50;
+export const MAX_AGE_FOR_BABY = 2;
+export const MAX_AGE_FOR_TODDLER = 5;
+export const MAX_AGE_FOR_CHILD = 12;
 
 export class Preparation {
   static prepareGifts(numberOfGifts: number): GiftPreparation {
@@ -21,14 +31,16 @@ export class Preparation {
   }
 
   static categorizeGift(age: number): string {
-    if (age <= 2) {
-      return "Baby";
-    } else if (age <= 5) {
-      return "Toddler";
-    } else if (age <= 12) {
-      return "Child";
+    switch (true) {
+      case age <= MAX_AGE_FOR_BABY:
+        return GiftCategory.BABY;
+      case age <= MAX_AGE_FOR_TODDLER:
+        return GiftCategory.TODDLER;
+      case age <= MAX_AGE_FOR_CHILD:
+        return GiftCategory.CHILD;
+      default:
+        return GiftCategory.TEEN;
     }
-    return "Teen";
   }
 
   static ensureToyBalance(
