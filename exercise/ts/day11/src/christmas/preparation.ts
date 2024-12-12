@@ -10,12 +10,14 @@ export const MAX_GIFTS_FOR_ELVES = 50;
 
 export class Preparation {
   static prepareGifts(numberOfGifts: number): GiftPreparation {
-    if (numberOfGifts <= 0) {
-      return GiftPreparation.NO_ONE;
-    } else if (numberOfGifts < MAX_GIFTS_FOR_ELVES) {
-      return GiftPreparation.ELVES;
+    switch (true) {
+      case numberOfGifts <= 0:
+        return GiftPreparation.NO_ONE;
+      case numberOfGifts < MAX_GIFTS_FOR_ELVES:
+        return GiftPreparation.ELVES;
+      default:
+        return GiftPreparation.SANTA;
     }
-    return GiftPreparation.SANTA;
   }
 
   static categorizeGift(age: number): string {
