@@ -17,14 +17,6 @@ export class Santa {
       throw new Error("No such child found");
     }
 
-    if (foundChild.behavior === "naughty") {
-      return foundChild.wishlist[2];
-    } else if (foundChild.behavior === "nice") {
-      return foundChild.wishlist[1];
-    } else if (foundChild.behavior === "very nice") {
-      return foundChild.wishlist[0];
-    }
-
-    return undefined;
+    return foundChild.toyToChoose();
   }
 }
