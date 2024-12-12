@@ -1,4 +1,4 @@
-import { ToyType } from "./toyType";
+import { ToyBalance, ToyType } from "./toyType";
 
 export enum GiftPreparation {
   NO_ONE = "No gifts to prepare.",
@@ -48,17 +48,11 @@ export class Preparation {
     toysCount: number,
     totalToys: number
   ): boolean {
-    const typePercentage = toysCount / totalToys;
-
-    switch (toyType) {
-      case ToyType.EDUCATIONAL:
-        return typePercentage >= 0.25;
-      case ToyType.FUN:
-        return typePercentage >= 0.3;
-      case ToyType.CREATIVE:
-        return typePercentage >= 0.2;
-      default:
-        return false;
+    if (!ToyBalance.has(toyType)) {
+      return false;
     }
+
+    const typePercentage = toysCount / totalToys;
+    return typePercentage >= ToyBalance.get(toyType);
   }
 }

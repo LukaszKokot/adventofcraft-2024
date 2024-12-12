@@ -75,6 +75,8 @@ describe("Preparation", () => {
     [ToyType.EDUCATIONAL, 20, 100, false],
     [ToyType.FUN, 29, 100, false],
     [ToyType.CREATIVE, 15, 100, false],
+    [undefined, 15, 100, false],
+    [null, 15, 100, false],
   ])(
     "ensureToyBalance should return %s for toy type %s with %d toys out of %d total toys",
     (toyType, toysCount, totalToys, expected) => {
