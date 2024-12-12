@@ -1,11 +1,11 @@
-import { Toy } from './Toy';
+import { Toy } from "./Toy";
 
 export class Child {
-    public wishlist: Toy[] = [];
+  public wishlist: Toy[] = [];
 
-    constructor(public name: string, public behavior: string) {}
+  constructor(public name: string, public behavior: string) {}
 
-    setWishlist(firstChoice: Toy, secondChoice: Toy, thirdChoice: Toy): void {
-        this.wishlist = [firstChoice, secondChoice, thirdChoice];
-    }
+  setWishlist(firstChoice: Toy, secondChoice: Toy, thirdChoice: Toy): void {
+    this.wishlist = [firstChoice, secondChoice, thirdChoice];
+  }
 }
