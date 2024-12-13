@@ -96,14 +96,15 @@ export class ShoppingSleigh {
     unitPrice: number
   ): Discount | undefined {
     const x = 3;
-    if (quantity < 3) {
+    if (quantity < x) {
       return;
     }
 
+    const y = 2;
     const numberOfXs = Math.floor(quantity / x);
     const discountAmount =
       quantity * unitPrice -
-      (numberOfXs * 2 * unitPrice + (quantity % 3) * unitPrice);
-    return new Discount(product, "3 for 2", -discountAmount);
+      (numberOfXs * y * unitPrice + (quantity % x) * unitPrice);
+    return new Discount(product, `${x} for ${y}`, -discountAmount);
   }
 }
