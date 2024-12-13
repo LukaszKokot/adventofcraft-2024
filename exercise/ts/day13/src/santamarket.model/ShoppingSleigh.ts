@@ -38,14 +38,11 @@ export class ShoppingSleigh {
         let x = 1;
 
         if (offer.offerType === SpecialOfferType.THREE_FOR_TWO) {
-          x = 3;
-          const numberOfXs = Math.floor(quantityAsInt / x);
-          if (quantityAsInt >= 3) {
-            const discountAmount =
-              quantity * unitPrice -
-              (numberOfXs * 2 * unitPrice + (quantityAsInt % 3) * unitPrice);
-            discount = new Discount(product, "3 for 2", -discountAmount);
-          }
+          discount = this.buildThreeForTwoProductDiscount(
+            product,
+            quantity,
+            unitPrice
+          );
         }
 
         if (offer.offerType === SpecialOfferType.TWO_FOR_AMOUNT) {
@@ -91,5 +88,22 @@ export class ShoppingSleigh {
           receipt.addDiscount(discount);
         }
       });
+  }
+
+  buildThreeForTwoProductDiscount(
+    product: Product,
+    quantity: number,
+    unitPrice: number
+  ): Discount | undefined {
+    const x = 3;
+    if (quantity < 3) {
+      return;
+    }
+
+    const numberOfXs = Math.floor(quantity / x);
+    const discountAmount =
+      quantity * unitPrice -
+      (numberOfXs * 2 * unitPrice + (quantity % 3) * unitPrice);
+    return new Discount(product, "3 for 2", -discountAmount);
   }
 }
