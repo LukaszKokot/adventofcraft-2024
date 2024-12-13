@@ -16,6 +16,10 @@ export class Offer {
       discount = this.buildThreeForTwoProductDiscount(quantity, unitPrice);
     }
 
+    if (this.offerType === SpecialOfferType.TWO_FOR_ONE) {
+      discount = this.buildTwoForOneProductDiscount(quantity, unitPrice);
+    }
+
     if (this.offerType === SpecialOfferType.TWO_FOR_AMOUNT) {
       discount = this.buildXQuantityForAmountDiscount(
         quantity,
@@ -55,6 +59,23 @@ export class Offer {
     }
 
     const y = 2;
+    const numberOfXs = Math.floor(quantity / x);
+    const discountAmount =
+      quantity * unitPrice -
+      (numberOfXs * y * unitPrice + (quantity % x) * unitPrice);
+    return new Discount(this.product, `${x} for ${y}`, -discountAmount);
+  }
+
+  private buildTwoForOneProductDiscount(
+    quantity: number,
+    unitPrice: number
+  ): Discount | undefined {
+    const x = 2;
+    if (quantity < x) {
+      return;
+    }
+
+    const y = 1;
     const numberOfXs = Math.floor(quantity / x);
     const discountAmount =
       quantity * unitPrice -

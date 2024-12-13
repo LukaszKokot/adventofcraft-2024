@@ -1,4 +1,5 @@
 export enum SpecialOfferType {
+  TWO_FOR_ONE,
   THREE_FOR_TWO,
   TEN_PERCENT_DISCOUNT,
   TWO_FOR_AMOUNT,
