@@ -8,27 +8,43 @@ import { SpecialOfferType } from "../src/santamarket.model/SpecialOfferType";
 import { FakeCatalog } from "./FakeCatalog";
 
 describe("Santamarket Tests", () => {
-  it("calculates total without discounts", () => {
-    const catalog = new FakeCatalog();
-    const teddyBear = new Product("teddyBear", ProductUnit.EACH);
-    catalog.addProduct(teddyBear, 1.0);
+  describe("calculates a total without discounts", () => {
+    it("for an empty sleigh", () => {
+      const catalog = new FakeCatalog();
+      const teddyBear = new Product("teddyBear", ProductUnit.EACH);
+      catalog.addProduct(teddyBear, 1.0);
 
-    const sleigh = new ShoppingSleigh();
-    sleigh.addItemQuantity(teddyBear, 3);
+      const sleigh = new ShoppingSleigh();
 
-    const elf = new ChristmasElf(catalog);
-    const receipt = elf.checksOutArticlesFrom(sleigh);
+      const elf = new ChristmasElf(catalog);
+      const receipt = elf.checksOutArticlesFrom(sleigh);
 
-    const expectedTotalPrice = 3.0;
-    const expectedReceiptItem = new ReceiptItem(
-      teddyBear,
-      3,
-      1.0,
-      expectedTotalPrice
-    );
+      expect(receipt.getTotalPrice()).toBe(0);
+      expect(receipt.getItems()).toHaveLength(0);
+    });
 
-    expect(receipt.getTotalPrice()).toBeCloseTo(expectedTotalPrice, 0.001);
-    expect(receipt.getItems()[0].equals(expectedReceiptItem)).toBe(true);
+    it("when the sleigh is empty", () => {
+      const catalog = new FakeCatalog();
+      const teddyBear = new Product("teddyBear", ProductUnit.EACH);
+      catalog.addProduct(teddyBear, 1.0);
+
+      const sleigh = new ShoppingSleigh();
+      sleigh.addItemQuantity(teddyBear, 3);
+
+      const elf = new ChristmasElf(catalog);
+      const receipt = elf.checksOutArticlesFrom(sleigh);
+
+      const expectedTotalPrice = 3.0;
+      const expectedReceiptItem = new ReceiptItem(
+        teddyBear,
+        3,
+        1.0,
+        expectedTotalPrice
+      );
+
+      expect(receipt.getTotalPrice()).toBeCloseTo(expectedTotalPrice, 0.001);
+      expect(receipt.getItems()[0].equals(expectedReceiptItem)).toBe(true);
+    });
   });
 
   it("applies ten percent discount", () => {
