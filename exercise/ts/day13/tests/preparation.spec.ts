@@ -8,11 +8,12 @@ import { SpecialOfferType } from "../src/santamarket.model/SpecialOfferType";
 import { FakeCatalog } from "./FakeCatalog";
 
 describe("Santamarket Tests", () => {
+  const teddyBear = new Product("teddyBear", ProductUnit.EACH);
+  const turkey = new Product("turkey", ProductUnit.KILO);
+
   describe("calculates a total without discounts", () => {
     it("for an empty sleigh", () => {
-      const catalog = new FakeCatalog();
-      const teddyBear = new Product("teddyBear", ProductUnit.EACH);
-      catalog.addProduct(teddyBear, 1.0);
+      const catalog = new FakeCatalog().withProduct(teddyBear, 1.0);
 
       const sleigh = new ShoppingSleigh();
 
@@ -24,9 +25,7 @@ describe("Santamarket Tests", () => {
     });
 
     it("when the sleigh is empty", () => {
-      const catalog = new FakeCatalog();
-      const teddyBear = new Product("teddyBear", ProductUnit.EACH);
-      catalog.addProduct(teddyBear, 1.0);
+      const catalog = new FakeCatalog().withProduct(teddyBear, 1.0);
 
       const sleigh = new ShoppingSleigh();
       sleigh.addItemQuantity(teddyBear, 3);
@@ -48,9 +47,7 @@ describe("Santamarket Tests", () => {
   });
 
   it("applies ten percent discount", () => {
-    const catalog = new FakeCatalog();
-    const turkey = new Product("turkey", ProductUnit.KILO);
-    catalog.addProduct(turkey, 2.0);
+    const catalog = new FakeCatalog().withProduct(turkey, 2.0);
 
     const sleigh = new ShoppingSleigh();
     sleigh.addItemQuantity(turkey, 2);
@@ -75,9 +72,7 @@ describe("Santamarket Tests", () => {
   });
 
   it("applies three for two discount", () => {
-    const catalog = new FakeCatalog();
-    const teddyBear = new Product("teddyBear", ProductUnit.EACH);
-    catalog.addProduct(teddyBear, 1.0);
+    const catalog = new FakeCatalog().withProduct(teddyBear, 1.0);
 
     const elf = new ChristmasElf(catalog);
     elf.addSpecialOffer(SpecialOfferType.THREE_FOR_TWO, teddyBear, 0);
@@ -103,9 +98,7 @@ describe("Santamarket Tests", () => {
   });
 
   it("applies two for amount discount", () => {
-    const catalog = new FakeCatalog();
-    const teddyBear = new Product("teddyBear", ProductUnit.EACH);
-    catalog.addProduct(teddyBear, 1.0);
+    const catalog = new FakeCatalog().withProduct(teddyBear, 1.0);
 
     const elf = new ChristmasElf(catalog);
     const discountedPriceForTwoTeddyBears = 1.6;
@@ -136,9 +129,7 @@ describe("Santamarket Tests", () => {
   });
 
   it("applies five for amount discount", () => {
-    const catalog = new FakeCatalog();
-    const teddyBear = new Product("teddyBear", ProductUnit.EACH);
-    catalog.addProduct(teddyBear, 1.0);
+    const catalog = new FakeCatalog().withProduct(teddyBear, 1.0);
 
     const elf = new ChristmasElf(catalog);
     const discountedPriceForFiveTeddyBears = 4.0;
@@ -169,11 +160,9 @@ describe("Santamarket Tests", () => {
   });
 
   it("applies discount for one of two different items in sleigh", () => {
-    const catalog = new FakeCatalog();
-    const teddyBear = new Product("teddyBear", ProductUnit.EACH);
-    const turkey = new Product("turkey", ProductUnit.KILO);
-    catalog.addProduct(teddyBear, 1.0);
-    catalog.addProduct(turkey, 2.0);
+    const catalog = new FakeCatalog()
+      .withProduct(teddyBear, 1.0)
+      .withProduct(turkey, 2.0);
 
     const elf = new ChristmasElf(catalog);
     elf.addSpecialOffer(SpecialOfferType.TEN_PERCENT_DISCOUNT, teddyBear, 10);

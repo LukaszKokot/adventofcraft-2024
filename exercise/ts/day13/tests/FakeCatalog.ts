@@ -11,4 +11,9 @@ export class FakeCatalog implements SantamarketCatalog {
   getUnitPrice(product: Product): number {
     return this.prices.get(product.name) || 0;
   }
+
+  withProduct(product: Product, price: number): FakeCatalog {
+    this.prices.set(product.name, price);
+    return this;
+  }
 }
