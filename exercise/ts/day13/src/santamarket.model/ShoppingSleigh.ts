@@ -40,7 +40,7 @@ export class ShoppingSleigh {
         if (offer.offerType === SpecialOfferType.THREE_FOR_TWO) {
           discount = this.buildThreeForTwoProductDiscount(
             product,
-            quantity,
+            quantityAsInt,
             unitPrice
           );
         }
@@ -48,7 +48,7 @@ export class ShoppingSleigh {
         if (offer.offerType === SpecialOfferType.TWO_FOR_AMOUNT) {
           discount = this.buildTwoForAmountDiscount(
             product,
-            quantity,
+            quantityAsInt,
             unitPrice,
             offer.argument
           );
@@ -57,18 +57,18 @@ export class ShoppingSleigh {
         if (offer.offerType === SpecialOfferType.FIVE_FOR_AMOUNT) {
           discount = this.buildFiveForAmountDiscount(
             product,
-            quantity,
+            quantityAsInt,
             unitPrice,
             offer.argument
           );
         }
 
         if (offer.offerType === SpecialOfferType.TEN_PERCENT_DISCOUNT) {
-          const discountAmount = -quantity * unitPrice * (offer.argument / 100);
-          discount = new Discount(
+          discount = this.buildPercentageDiscount(
             product,
-            `${offer.argument}% off`,
-            discountAmount
+            quantityAsInt,
+            unitPrice,
+            offer.argument
           );
         }
 
@@ -128,5 +128,20 @@ export class ShoppingSleigh {
       discountedAmount * Math.floor(quantity / x) + (quantity % x) * unitPrice;
     const discountN = unitPrice * quantity - total;
     return new Discount(product, `${x} for ${discountedAmount}`, -discountN);
+  }
+
+  buildPercentageDiscount(
+    product: Product,
+    quantity: number,
+    unitPrice: number,
+    discountedPercentage: number
+  ): Discount | undefined {
+    const discountedAmount =
+      -quantity * unitPrice * (discountedPercentage / 100);
+    return new Discount(
+      product,
+      `${discountedPercentage}% off`,
+      discountedAmount
+    );
   }
 }
