@@ -46,18 +46,12 @@ export class ShoppingSleigh {
         }
 
         if (offer.offerType === SpecialOfferType.TWO_FOR_AMOUNT) {
-          x = 2;
-          if (quantityAsInt >= 2) {
-            const total =
-              offer.argument * Math.floor(quantityAsInt / x) +
-              (quantityAsInt % 2) * unitPrice;
-            const discountN = unitPrice * quantity - total;
-            discount = new Discount(
-              product,
-              `2 for ${offer.argument}`,
-              -discountN
-            );
-          }
+          discount = this.buildTwoForAmountDiscount(
+            product,
+            quantity,
+            unitPrice,
+            offer.argument
+          );
         }
 
         if (offer.offerType === SpecialOfferType.FIVE_FOR_AMOUNT) {
@@ -106,5 +100,21 @@ export class ShoppingSleigh {
       quantity * unitPrice -
       (numberOfXs * y * unitPrice + (quantity % x) * unitPrice);
     return new Discount(product, `${x} for ${y}`, -discountAmount);
+  }
+
+  buildTwoForAmountDiscount(
+    product: Product,
+    quantity: number,
+    unitPrice: number,
+    discountedAmount: number
+  ) {
+    const x = 2;
+    if (quantity >= 2) {
+      const total =
+        discountedAmount * Math.floor(quantity / x) +
+        (quantity % 2) * unitPrice;
+      const discountN = unitPrice * quantity - total;
+      return new Discount(product, `2 for ${discountedAmount}`, -discountN);
+    }
   }
 }
