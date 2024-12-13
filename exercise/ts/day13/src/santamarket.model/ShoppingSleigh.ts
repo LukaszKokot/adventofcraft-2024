@@ -35,7 +35,6 @@ export class ShoppingSleigh {
         const unitPrice = catalog.getUnitPrice(product);
         const quantityAsInt = Math.floor(quantity);
         let discount: Discount | null = null;
-        let x = 1;
 
         if (offer.offerType === SpecialOfferType.THREE_FOR_TWO) {
           discount = this.buildThreeForTwoProductDiscount(
