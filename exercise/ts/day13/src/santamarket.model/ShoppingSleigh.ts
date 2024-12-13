@@ -28,9 +28,10 @@ export class ShoppingSleigh {
     offers: Map<Product, Offer>,
     catalog: SantamarketCatalog
   ): void {
-    this.productQuantities.forEach((quantity, product) => {
-      if (offers.has(product)) {
-        const offer = offers.get(product)!;
+    Array.from(this.productQuantities.entries())
+      .filter(([product]) => offers.has(product))
+      .forEach(([product, quantity]) => {
+        const offer = offers.get(product);
         const unitPrice = catalog.getUnitPrice(product);
         const quantityAsInt = Math.floor(quantity);
         let discount: Discount | null = null;
@@ -89,7 +90,6 @@ export class ShoppingSleigh {
         if (discount) {
           receipt.addDiscount(discount);
         }
-      }
-    });
+      });
   }
 }
