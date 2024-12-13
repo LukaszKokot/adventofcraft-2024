@@ -46,19 +46,21 @@ export class ShoppingSleigh {
         }
 
         if (offer.offerType === SpecialOfferType.TWO_FOR_AMOUNT) {
-          discount = this.buildTwoForAmountDiscount(
+          discount = this.buildXQuantityForAmountDiscount(
             product,
             quantityAsInt,
             unitPrice,
+            2,
             offer.argument
           );
         }
 
         if (offer.offerType === SpecialOfferType.FIVE_FOR_AMOUNT) {
-          discount = this.buildFiveForAmountDiscount(
+          discount = this.buildXQuantityForAmountDiscount(
             product,
             quantityAsInt,
             unitPrice,
+            5,
             offer.argument
           );
         }
@@ -96,38 +98,26 @@ export class ShoppingSleigh {
     return new Discount(product, `${x} for ${y}`, -discountAmount);
   }
 
-  buildTwoForAmountDiscount(
+  buildXQuantityForAmountDiscount(
     product: Product,
     quantity: number,
     unitPrice: number,
+    discountedQuantity: number,
     discountedAmount: number
   ): Discount | undefined {
-    const x = 2;
-    if (quantity < x) {
+    if (quantity < discountedQuantity) {
       return;
     }
 
     const total =
-      discountedAmount * Math.floor(quantity / x) + (quantity % x) * unitPrice;
+      discountedAmount * Math.floor(quantity / discountedQuantity) +
+      (quantity % discountedQuantity) * unitPrice;
     const discountN = unitPrice * quantity - total;
-    return new Discount(product, `${x} for ${discountedAmount}`, -discountN);
-  }
-
-  buildFiveForAmountDiscount(
-    product: Product,
-    quantity: number,
-    unitPrice: number,
-    discountedAmount: number
-  ): Discount | undefined {
-    const x = 5;
-    if (quantity < x) {
-      return;
-    }
-
-    const total =
-      discountedAmount * Math.floor(quantity / x) + (quantity % x) * unitPrice;
-    const discountN = unitPrice * quantity - total;
-    return new Discount(product, `${x} for ${discountedAmount}`, -discountN);
+    return new Discount(
+      product,
+      `${discountedQuantity} for ${discountedAmount}`,
+      -discountN
+    );
   }
 
   buildPercentageDiscount(
