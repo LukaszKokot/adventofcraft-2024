@@ -65,20 +65,20 @@ export class Offer {
   private buildXQuantityForAmountDiscount(
     quantity: number,
     unitPrice: number,
-    discountedQuantity: number,
+    requiredQuantity: number,
     discountedAmount: number
   ): Discount | undefined {
-    if (quantity < discountedQuantity) {
+    if (quantity < requiredQuantity) {
       return;
     }
 
     const total =
-      discountedAmount * Math.floor(quantity / discountedQuantity) +
-      (quantity % discountedQuantity) * unitPrice;
+      discountedAmount * Math.floor(quantity / requiredQuantity) +
+      (quantity % requiredQuantity) * unitPrice;
     const discountN = unitPrice * quantity - total;
     return new Discount(
       this.product,
-      `${discountedQuantity} for ${discountedAmount}`,
+      `${requiredQuantity} for ${discountedAmount}`,
       -discountN
     );
   }
