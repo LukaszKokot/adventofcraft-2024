@@ -55,18 +55,12 @@ export class ShoppingSleigh {
         }
 
         if (offer.offerType === SpecialOfferType.FIVE_FOR_AMOUNT) {
-          x = 5;
-          const numberOfXs = Math.floor(quantityAsInt / x);
-          if (quantityAsInt >= 5) {
-            const discountTotal =
-              unitPrice * quantity -
-              (offer.argument * numberOfXs + (quantityAsInt % 5) * unitPrice);
-            discount = new Discount(
-              product,
-              `5 for ${offer.argument}`,
-              -discountTotal
-            );
-          }
+          discount = this.buildFiveForAmountDiscount(
+            product,
+            quantity,
+            unitPrice,
+            offer.argument
+          );
         }
 
         if (offer.offerType === SpecialOfferType.TEN_PERCENT_DISCOUNT) {
@@ -109,6 +103,23 @@ export class ShoppingSleigh {
     discountedAmount: number
   ): Discount | undefined {
     const x = 2;
+    if (quantity < x) {
+      return;
+    }
+
+    const total =
+      discountedAmount * Math.floor(quantity / x) + (quantity % x) * unitPrice;
+    const discountN = unitPrice * quantity - total;
+    return new Discount(product, `${x} for ${discountedAmount}`, -discountN);
+  }
+
+  buildFiveForAmountDiscount(
+    product: Product,
+    quantity: number,
+    unitPrice: number,
+    discountedAmount: number
+  ): Discount | undefined {
+    const x = 5;
     if (quantity < x) {
       return;
     }
