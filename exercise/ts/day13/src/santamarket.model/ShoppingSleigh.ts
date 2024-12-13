@@ -107,14 +107,15 @@ export class ShoppingSleigh {
     quantity: number,
     unitPrice: number,
     discountedAmount: number
-  ) {
+  ): Discount | undefined {
     const x = 2;
-    if (quantity >= 2) {
-      const total =
-        discountedAmount * Math.floor(quantity / x) +
-        (quantity % 2) * unitPrice;
-      const discountN = unitPrice * quantity - total;
-      return new Discount(product, `2 for ${discountedAmount}`, -discountN);
+    if (quantity < x) {
+      return;
     }
+
+    const total =
+      discountedAmount * Math.floor(quantity / x) + (quantity % x) * unitPrice;
+    const discountN = unitPrice * quantity - total;
+    return new Discount(product, `${x} for ${discountedAmount}`, -discountN);
   }
 }
